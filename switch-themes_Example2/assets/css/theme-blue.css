@@ -1,0 +1,9 @@
+:root {
+    --primary-color: #1e88e5;       /* Blue button color */
+    --secondary-color: #1565c0;     /* Darker blue on hover */
+    --text-color: #333;            /* Default text */
+    --label-color: #1e88e5;        /* Blue labels */
+    --bg-color: #e3f2fd;           /* Light blue background */
+    --card-bg: #bbdefb;            /* Card background */
+    --border-color: #90caf9;       /* Border color */
+}

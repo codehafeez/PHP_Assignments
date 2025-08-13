@@ -1,0 +1,9 @@
+:root {
+    --primary-color: #c0c0c0;       /* Silver button color */
+    --secondary-color: #a8a8a8;     /* Darker silver on hover */
+    --text-color: #333;            /* Black text */
+    --label-color: #333;           /* Black labels */
+    --bg-color: #fff;              /* White background */
+    --card-bg: #f9f9f9;            /* Card background */
+    --border-color: #eee;          /* Border color */
+}

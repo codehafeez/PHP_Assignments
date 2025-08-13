@@ -1,0 +1,17 @@
+Simple Page with Multiple Languages (English, Arabic, Urdu)
+
+
+/simple-website/
+│── index.php          # Home page
+│── about.php          # About page
+│── contact.php        # Contact page
+│── includes/
+│   │── header.php     # Common header
+│   │── footer.php     # Common footer
+│   │── lang.php       # Language switcher
+│── styles/
+│   │── style.css      # CSS file
+│── languages/
+│   │── en.php         # English translations
+│   │── ar.php         # Arabic translations
+│   │── ur.php         # Urdu translations

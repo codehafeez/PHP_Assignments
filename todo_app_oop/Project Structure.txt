@@ -1,0 +1,38 @@
+todo_app/
+├── config/
+│   └── database.php
+├── controllers/
+│   ├── AuthController.php
+│   ├── TaskController.php
+│   └── UserController.php
+├── includes/
+│   ├── header.php
+│   ├── footer.php
+│   └── functions.php
+├── models/
+│   ├── Task.php
+│   └── User.php
+├── public/
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── scripts.js
+├── views/
+│   ├── auth/
+│   │   ├── login.php
+│   │   └── register.php
+│   ├── errors/
+│   │   ├── 404.php
+│   │   └── 500.php
+│   ├── profile/
+│   │   └── index.php
+│   ├── tasks/
+│   │   ├── index.php
+│   │   ├── add.php
+│   │   └── edit.php
+│   └── users/
+│       ├── index.php
+│       ├── add.php
+│       └── edit.php
+├── index.php
+└── .htaccess

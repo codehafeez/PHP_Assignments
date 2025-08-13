@@ -1,0 +1,40 @@
+/* Custom styles to complement Tailwind */
+.flash-message {
+    transition: opacity 0.5s ease;
+}
+
+/* Animation for task items */
+.task-item-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+.task-item-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 300ms ease;
+}
+.task-item-exit {
+    opacity: 1;
+}
+.task-item-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 300ms ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+

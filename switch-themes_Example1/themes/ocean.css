@@ -1,0 +1,17 @@
+body {
+  background-color: #e0f2fe; /* blue-100 */
+  color: #1e3a8a; /* blue-900 */
+}
+
+.card {
+  background-color: #bae6fd; /* blue-200 */
+}
+
+.btn {
+  background-color: #0284c7; /* blue-600 */
+  color: #fff;
+}
+
+.btn:hover {
+  background-color: #0369a1; /* blue-700 */
+}

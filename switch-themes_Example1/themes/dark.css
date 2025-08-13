@@ -1,0 +1,17 @@
+body {
+  background-color: #111827; /* gray-900 */
+  color: #ffffff;
+}
+
+.card {
+  background-color: #1f2937; /* gray-800 */
+}
+
+.btn {
+  background-color: #374151; /* gray-700 */
+  color: #fff;
+}
+
+.btn:hover {
+  background-color: #4b5563; /* gray-600 */
+}

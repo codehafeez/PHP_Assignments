@@ -1,0 +1,125 @@
+=====================================
+PDF Report Design Custom
+=====================================
+
+1. First, install the TCPDF library:
+composer require tecnickcom/tcpdf
+
+
+2. Create a new method in your UserController.php:
+public function exportPdf() {
+    // Check if TCPDF is available
+    if (!class_exists('TCPDF')) {
+        flash('error', 'PDF export feature is not available. Please contact administrator.');
+        redirect('users');
+    }
+
+    try {
+        // Create new PDF document
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        
+        // Set document information
+        $pdf->SetCreator('Tools App');
+        $pdf->SetAuthor('Tools App');
+        $pdf->SetTitle('Users Report');
+        $pdf->SetSubject('Users Management');
+        
+        // Add a page
+        $pdf->AddPage();
+        
+        // Set font
+        $pdf->SetFont('helvetica', 'B', 16);
+        
+        // Title
+        $pdf->Cell(0, 15, 'Users Management Report', 0, 1, 'C');
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->Cell(0, 10, 'Generated on: ' . date('M j, Y H:i:s'), 0, 1, 'C');
+        $pdf->Ln(10);
+        
+        // Get users data
+        $users = $this->userModel->getAllExcept(current_user_id());
+        
+        // Create table header
+        $header = ['ID', 'Name', 'Email', 'Role', 'Created At'];
+        $w = [15, 40, 60, 30, 40];
+        
+        // Set font for table
+        $pdf->SetFont('helvetica', 'B', 10);
+        
+        // Header
+        for($i = 0; $i < count($header); $i++) {
+            $pdf->Cell($w[$i], 7, $header[$i], 1, 0, 'C');
+        }
+        $pdf->Ln();
+        
+        // Set font for data
+        $pdf->SetFont('helvetica', '', 9);
+        
+        // Data
+        foreach($users as $user) {
+            $pdf->Cell($w[0], 6, $user['id'], 'LR', 0, 'C');
+            $pdf->Cell($w[1], 6, $user['name'], 'LR');
+            $pdf->Cell($w[2], 6, $user['email'], 'LR');
+            
+            // Role with color
+            $pdf->SetFillColor($user['role'] === 'admin' ? [200, 180, 255] : [220, 220, 220]);
+            $pdf->Cell($w[3], 6, ucfirst($user['role']), 'LR', 0, 'C', true);
+            $pdf->SetFillColor(255, 255, 255);
+            
+            $pdf->Cell($w[4], 6, date('M j, Y', strtotime($user['created_at'])), 'LR', 0, 'C');
+            $pdf->Ln();
+        }
+        
+        // Closing line
+        $pdf->Cell(array_sum($w), 0, '', 'T');
+        
+        // Footer
+        $pdf->SetY(-15);
+        $pdf->SetFont('helvetica', 'I', 8);
+        $pdf->Cell(0, 10, '© ' . date('Y') . ' Tools App - Page '.$pdf->getAliasNumPage().'/'.$pdf->getAliasNbPages(), 0, 0, 'C');
+        
+        // Output PDF
+        $pdf->Output('users_report_' . date('Y-m-d') . '.pdf', 'D');
+        exit;
+    } catch (Exception $e) {
+        error_log("PDF export error: " . $e->getMessage());
+        flash('error', 'Failed to generate PDF report');
+        redirect('users');
+    }
+}
+
+
+3. Add the PDF export button to your view:
+<div class="space-x-2">
+    <a href="<?= base_url('users/export-pdf') ?>" class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+        Export PDF
+    </a>
+    <a href="<?= base_url('users/export') ?>" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+        Export Excel
+    </a>
+    <a href="<?= base_url('users/import') ?>" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700">
+        Import Users
+    </a>
+    <a href="<?= base_url('users/add') ?>" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+        Add User
+    </a>
+</div>
+
+
+4. Add the route to your router (index.php):
+case '/users/export-pdf':
+    $controller = new UserController();
+    $controller->exportPdf();
+    break;
+
+
+5. Customize the PDF design (optional):
+You can further customize the PDF by:
+Adding a logo:
+$pdf->Image('path/to/logo.png', 10, 10, 30, 0, 'PNG');
+
+Changing colors:
+$pdf->SetTextColor(255, 0, 0); // Red text
+$pdf->SetDrawColor(0, 0, 255); // Blue borders
+
+

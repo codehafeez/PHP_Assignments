@@ -1,0 +1,9 @@
+:root {
+    --primary-color: #000000;       /* Black button color */
+    --secondary-color: #333333;     /* Dark gray on hover */
+    --text-color: #f0f0f0;         /* Light text */
+    --label-color: #000000;        /* Black labels */
+    --bg-color: #222;              /* Dark background */
+    --card-bg: #333;               /* Card background */
+    --border-color: #444;          /* Border color */
+}

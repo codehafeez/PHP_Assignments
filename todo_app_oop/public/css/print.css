@@ -1,0 +1,95 @@
+/* Consolidated Print Styles */
+@media print {
+    /* Hide unnecessary elements */
+    nav, .no-print, .flash-message, 
+    .bg-blue-600, .bg-indigo-600, .bg-green-600,
+    .bg-red-600, .bg-gray-600 {
+        display: none !important;
+    }
+
+    /* Hide the Actions column header */
+    th:nth-child(6),
+    /* Hide the Actions column cells */
+    td:nth-child(6) {
+        display: none;
+    }
+    
+    /* Hide the print button itself */
+    button[onclick="window.print()"] {
+        display: none;
+    }    
+    
+    /* Base styling */
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+        padding: 20px !important;
+    }
+    
+    /* Layout adjustments */
+    .container, .print-full-width {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Table styling */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin: 10px 0 !important;
+    }
+    
+    th, td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+        background: white !important;
+    }
+    
+    th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    /* Remove shadows and backgrounds */
+    .bg-white, .rounded-lg, .shadow {
+        background: white !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Remove link URLs */
+    a[href]:after {
+        content: none !important;
+    }
+    
+    /* Print header */
+    .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+    }
+    
+    /* Force page breaks */
+    .page-break {
+        page-break-after: always;
+    }
+    
+    /* Ensure visibility of text */
+    .text-white, .text-blue-600, .text-indigo-600,
+    .text-green-600, .text-red-600, .text-gray-600 {
+        color: black !important;
+    }
+    
+    /* Role badges visibility */
+    .bg-purple-200, .bg-gray-200 {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color: black !important;
+    }
+}

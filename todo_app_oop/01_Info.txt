@@ -1,0 +1,172 @@
+=====================================
+Import & Export - Excel
+=====================================
+
+1. First, install PhpSpreadsheet (a PHP library for working with Excel files):
+composer require phpoffice/phpspreadsheet
+
+
+2. Create two new methods in UserController.php:
+public function export() {
+    try {
+        // Create new Spreadsheet object
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set headers
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Name');
+        $sheet->setCellValue('C1', 'Email');
+        $sheet->setCellValue('D1', 'Role');
+        $sheet->setCellValue('E1', 'Created At');
+
+        // Get users data
+        $users = $this->userModel->getAllExcept(current_user_id());
+
+        // Add data rows
+        $row = 2;
+        foreach ($users as $user) {
+            $sheet->setCellValue('A' . $row, $user['id']);
+            $sheet->setCellValue('B' . $row, $user['name']);
+            $sheet->setCellValue('C' . $row, $user['email']);
+            $sheet->setCellValue('D' . $row, $user['role']);
+            $sheet->setCellValue('E' . $row, $user['created_at']);
+            $row++;
+        }
+
+        // Set headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="users_export_' . date('Y-m-d') . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        // Create Excel file and output
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    } catch (Exception $e) {
+        error_log("Export error: " . $e->getMessage());
+        flash('error', 'Failed to export users');
+        redirect('users');
+    }
+}
+
+public function import() {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        require_once __DIR__ . '/../views/users/import.php';
+        return;
+    }
+
+    try {
+        if (!isset($_FILES['import_file']) {
+            throw new Exception('No file uploaded');
+        }
+
+        $file = $_FILES['import_file'];
+
+        // Validate file
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('File upload error');
+        }
+
+        // Check file extension
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if (!in_array(strtolower($fileExt), ['xlsx', 'xls', 'csv'])) {
+            throw new Exception('Invalid file type. Only Excel files are allowed.');
+        }
+
+        // Load the spreadsheet
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file['tmp_name']);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        // Remove header row
+        array_shift($rows);
+
+        // Process each row
+        $importedCount = 0;
+        foreach ($rows as $row) {
+            // Skip empty rows
+            if (empty($row[0])) continue;
+
+            // Prepare user data
+            $userData = [
+                'name' => $row[1] ?? '',
+                'email' => $row[2] ?? '',
+                'role' => $row[3] ?? 'user',
+                'created_at' => $row[4] ?? date('Y-m-d H:i:s')
+            ];
+
+            // Validate required fields
+            if (empty($userData['name']) || empty($userData['email'])) {
+                continue;
+            }
+
+            // Check if user exists
+            if ($this->userModel->emailExists($userData['email'])) {
+                continue;
+            }
+
+            // Generate a random password for new users
+            $password = bin2hex(random_bytes(8));
+
+            // Create user
+            if ($this->userModel->register($userData['name'], $userData['email'], $password, $userData['role'])) {
+                $importedCount++;
+            }
+        }
+
+        flash('success', "Successfully imported $importedCount users");
+    } catch (Exception $e) {
+        error_log("Import error: " . $e->getMessage());
+        flash('error', 'Failed to import users: ' . $e->getMessage());
+    }
+
+    redirect('users');
+}
+
+
+3. Create a new view file for import at views/users/import.php:
+<?php require_once __DIR__ . '/../../includes/header.php'; ?>
+
+<div class="container mx-auto max-w-md mt-10">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold mb-6">Import Users</h2>
+
+        <?php if ($error = flash('error')): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($error) ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="<?= base_url('users/import') ?>" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+            
+            <div class="mb-4">
+                <label for="import_file" class="block text-gray-700 mb-2">Excel File</label>
+                <input type="file" id="import_file" name="import_file" accept=".xlsx,.xls,.csv" required
+                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-sm text-gray-500 mt-1">Please upload an Excel file (.xlsx, .xls) or CSV file</p>
+            </div>
+
+            <div class="mb-6">
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+                    <p class="font-bold">Note:</p>
+                    <p>• The file should have columns in this order: ID, Name, Email, Role, Created At</p>
+                    <p>• The first row will be treated as headers and skipped</p>
+                    <p>• New users will be created with random passwords</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <a href="<?= base_url('users') ?>" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">Cancel</a>
+                <button type="submit" 
+                        class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Import Users
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+
